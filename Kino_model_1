@@ -1,0 +1,200 @@
+DROP SCHEMA IF EXISTS kino_1;
+
+CREATE SCHEMA IF NOT EXISTS kino_1 DEFAULT CHARACTER SET utf8;
+
+USE kino_1;
+
+
+CREATE TABLE IF NOT EXISTS tbl_settings (
+	s_id INT (11)  PRIMARY KEY,
+    s_hall_seats INT (6) ,
+    s_ticket_no INT (11)
+    )
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = '3D/2D';
+
+CREATE TABLE IF NOT EXISTS tbl_movies (
+	m_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    m_name VARCHAR(100) NOT NULL,
+    m_year INT(4) NOT NULL ,
+    m_duration INT(3) DEFAULT NULL COMMENT 'in minutes',
+    m_desc VARCHAR(200) DEFAULT NULL,
+    m_genre_id INT (11) DEFAULT NULL COMMENT 'Вид прожекция (3D, 2D, ...)',
+    m_age_r TINYINT DEFAULT NULL COMMENT 'Възрастов рейтинг',
+    m_pic VARCHAR(100) DEFAULT NULL COMMENT 'Снимка',
+    m_type INT (11) NOT NULL COMMENT 'Вид прожекция (3D, 2D, ...)',
+    m_rating DECIMAL(2,1) DEFAULT NULL COMMENT 'Рейтинд',
+    m_lang INT (11) NOT NULL NULL COMMENT 'Вид прожекция (3D, 2D, ...)',
+    m_sub bit(1) DEFAULT 1 COMMENT 'Субтитри',
+    m_actor INT (11) NOT NULL,
+    m_producer INT (11) NOT NULL,
+    m_premire INT(1) DEFAULT NULL COMMENT '1 Предпримиера / 2 за примиера / 3 регулярно излъчване',
+    activ BIT(1) DEFAULT 1
+)
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = 'Филми';
+
+CREATE TABLE IF NOT EXISTS tbl_tickets (
+	t_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    t_price DECIMAL(4,2) DEFAULT NULL COMMENT 'cena',
+    t_title VARCHAR(50) NOT NULL COMMENT 'ime'
+    )
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = 'Билети';
+
+CREATE TABLE IF NOT EXISTS tbl_genres (
+	g_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    g_name VARCHAR(100) NOT NULL COMMENT 'janr'
+    )
+    
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = 'Жанрове';
+
+CREATE TABLE IF NOT EXISTS tbl_actors (
+	a_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    a_name VARCHAR(100) NOT NULL COMMENT 'aktiori'
+    )
+    
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = 'Актьори';
+
+CREATE TABLE IF NOT EXISTS tbl_producer (
+	p_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    p_name VARCHAR(100) NOT NULL COMMENT 'Име'
+    )
+    
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = 'Продуцент/Режисьор';
+
+CREATE TABLE IF NOT EXISTS tbl_programa (
+	pg_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    pg_date DATETIME ,
+    m_id INT (11),
+    pg_seats int(3) DEFAULT 100,
+    FOREIGN KEY (m_id) REFERENCES tbl_movies(m_id)
+    )
+    
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = 'Програма';
+
+CREATE TABLE IF NOT EXISTS tbl_sales (
+	sl_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    sl_date DATETIME ,
+    pg_id INT (11) ,
+    t_id INT (11) ,
+    sl_row INT(2) ,
+    sl_seat INT(3) ,
+    t_no int(11) ,
+    sl_price DECIMAL(4,2) DEFAULT NULL,
+	FOREIGN KEY (t_id) REFERENCES tbl_tickets(t_id),
+    FOREIGN KEY (pg_id) REFERENCES tbl_programa(pg_id)
+    )
+    
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = 'продажби';
+
+CREATE TABLE IF NOT EXISTS tbl_lang (
+	l_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    l_name VARCHAR(50)
+    )
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = 'езици';
+
+CREATE TABLE IF NOT EXISTS tbl_type (
+	ty_id INT (11) AUTO_INCREMENT PRIMARY KEY,
+    ty_name VARCHAR(50)
+    )
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = '3D/2D';
+
+
+CREATE TABLE IF NOT EXISTS tbl_movies_genres (
+	m_id INT (11) NOT NULL,
+    g_id INT (11) NOT NULL,
+    PRIMARY KEY (m_id, g_id),
+	FOREIGN KEY (m_id) REFERENCES tbl_movies (m_id),
+	FOREIGN KEY (g_id) REFERENCES tbl_genres (g_id)
+    )
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = '3D/2D';
+
+CREATE TABLE IF NOT EXISTS tbl_movies_actors (
+	m_id INT (11) ,
+    a_id INT (11) ,
+    PRIMARY KEY (m_id, a_id),
+	FOREIGN KEY (m_id) REFERENCES tbl_movies(m_id),
+	FOREIGN KEY (a_id) REFERENCES tbl_actors (a_id)
+    )
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = '3D/2D';
+
+CREATE TABLE IF NOT EXISTS tbl_movies_producer (
+	m_id INT (11) NOT NULL,
+    p_id INT (11) NOT NULL,
+    PRIMARY KEY (m_id, p_id),
+	FOREIGN KEY (m_id) REFERENCES tbl_movies(m_id),
+	FOREIGN KEY (p_id) REFERENCES tbl_producer (p_id)
+    )
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = '3D/2D';
+
+CREATE TABLE IF NOT EXISTS tbl_movies_lang (
+	m_id INT (11) ,
+    l_id INT (11) ,
+    PRIMARY KEY (m_id, l_id),
+	FOREIGN KEY (m_id) REFERENCES tbl_movies(m_id),
+	FOREIGN KEY (l_id) REFERENCES tbl_lang (l_id)
+    )
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = '3D/2D';
+
+CREATE TABLE IF NOT EXISTS tbl_movies_type (
+	m_id INT (11) ,
+    ty_id INT (11) ,
+    PRIMARY KEY (m_id, ty_id),
+	FOREIGN KEY (m_id) REFERENCES tbl_movies(m_id),
+	FOREIGN KEY (ty_id) REFERENCES tbl_type (ty_id)
+    )
+
+ENGINE = InnoDB
+DEFAULT CHARACTER SET = utf8
+COLLATE = utf8_general_ci
+COMMENT = '3D/2D';
+
+select*
+from tbl_tickets;
